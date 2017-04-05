@@ -16,9 +16,8 @@ serious disease, the time from the diagnosis of a disease until the
 person recovers, or the duration of time that a piece of machinery
 remains in good working order.
 
-Duration data can be used to answer questions analogous to what we
-might consider for other types of data, such as: what is the mean
-duration of a population?; what is the 75th percentile of the
+Duration data can be used to answer questions such as: what is the
+mean duration for a population?; what is the 75th percentile of the
 durations in a population?; when comparing two populations, which one
 has the shorter expected or median duration?; can we identify the
 unique associations between many independent variables and a duration
@@ -31,7 +30,7 @@ Here are some key concepts in duration analysis:
   important to be very explicit about what defines the time origin
   (time zero) from which the duration is calculated.  For example,
   when looking at the survival of people with a disease, the time
-  origin could be the date of diagnosis.  When looking at human
+  origin could be the date of diagnosis, but when looking at human
   lifespans ("all cause mortality") it might make more sense to define
   the time origin to be the date of birth.
 
@@ -57,13 +56,13 @@ Here are some key concepts in duration analysis:
 * __Risk set__: This is the set of units (e.g. people) in a sample at
   a given time who may possibly experience the event at that time.  It
   is usually the set of people who have not already experienced the
-  event and have not been censored (but the risk set may be only a
-  subset of these people).
+  event and who have not been censored (but the risk set may be only a
+  subset of these people when using "entry times").
 
 * __Hazard__: This is the probability of experiencing the event in the
   next time unit, given that it has not already occurred (technically,
-  this is the discrete time definition, the continuous time definition
-  of the hazard involves rates but follows the same logic).
+  this is the discrete time definition of the hazard, the continuous
+  time definition involves rates but follows the same logic).
 
 
 Marginal survival function and hazard estimation
@@ -79,14 +78,15 @@ estimating the survival function is the product-limit estimator or
 estimator](https://en.wikipedia.org/wiki/Kaplan%E2%80%93Meier_estimator).
 
 The idea behind the Kaplan-Meier estimate is not difficult.  Group the
-data by the distinct times t(1) < t(2) < ..., and let R(t) denote the
-risk set size at time t, and let d(t) indicate the number of events at
-time t (if there are no ties, d(t) will always be equal to either 0 or
-1).  The probability of the event occurring at time t (given that it
-has not occurred already) is estimated to be d(t)/R(t).  The
-probability of the event not occurring at time t is therefore
-estimated to be 1 - d(t)/R(t).  The probability of making it to time t
-without experiencing the event is therefore estimated to be
+data by the distinct times t(1) < t(2) < ... (times here can be either
+event times or censoring times), and let R(t) denote the risk set size
+at time t, and let d(t) indicate the number of events at time t (if
+there are no ties, d(t) will always be equal to either 0 or 1).  The
+probability of the event occurring at time t (given that it has not
+occurred already) is estimated to be d(t)/R(t).  The probability of
+the event not occurring at time t is therefore estimated to be 1 -
+d(t)/R(t).  The probability of making it to time t without
+experiencing the event is therefore estimated to be
 
 (1 - d(1)/R(1)) ⋅ (1 - d(2)/R(2)) ⋅ ... ⋅ (1 - d(t)/R(t)).
 
@@ -113,7 +113,7 @@ overlaying survival or hazard functions for several groups on the same
 axes.
 
 The code below estimates the marginal survival functions for two
-groups and overalys the estimates in a plot:
+groups and overlays the estimates in a plot:
 
 ```
 sf1 = sm.SurvfuncRight(time1, died1)
@@ -189,6 +189,28 @@ result = model.fit()
 After fitting the model, `result.summary()` prints the usual table of
 regression coefficients and standard errors.
 
+__More advanced topics in proportional hazards regression:__
+
+* Proportional hazards regression models allow the data to be
+  stratified.  Stratifiation is a partitioning of the data into
+  groups.  When estimating the coefficients, individuals are only
+  compared to other people in the same group.  This means that the
+  results are unaffected by confounding factors that are stable within
+  groups.  It is common to use stratification as a proxy for difficult
+  to measure confounders.  For example, in social research the
+  geographic location of a person's residence may be used to define
+  strata.
+
+* In many settings, we do not observe every subject from their time
+  origin.  If we begin monitoring a subject at a time t, then they
+  could not have been observed to have the event before that time.
+  For that reason, the subject should be removed from the risk set for
+  all times prior to t.  This can be accomplished by specifying t as
+  an _entry time_.
+
+* Survival regression can use weights to project results from a sample
+  to a population that differs from the population the data were
+  sampled from.
 
 More on censoring
 -----------------
