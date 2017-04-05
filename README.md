@@ -69,14 +69,13 @@ Here are some key concepts in duration analysis:
 Marginal survival function and hazard estimation
 ------------------------------------------------
 
-If there is no censoring, it is extremely easy to estimate the
-marginal survival function.  It is simply the complement of the
-empirical [cumulative distribution
+If there is no censoring, the marginal survival function can be
+estimated using the complement of the empirical [cumulative
+distribution
 function](https://en.wikipedia.org/wiki/Cumulative_distribution_function)
-of the data.
-
-If there is censoring, the standard method for estimating the survival
-function is the product-limit estimator or [Kaplan Meier
+of the data.  If there is censoring, the standard method for
+estimating the survival function is the product-limit estimator or
+[Kaplan Meier
 estimator](https://en.wikipedia.org/wiki/Kaplan%E2%80%93Meier_estimator).
 
 The idea behind the Kaplan-Meier estimate is not difficult.  Group the
