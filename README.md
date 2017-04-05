@@ -92,14 +92,38 @@ without experiencing the event is therefore estimated to be
 (1 - d(1)/R(1)) ⋅ (1 - d(2)/R(2)) ⋅ ... ⋅ (1 - d(t)/R(t)).
 
 A consequence of this definition is that the estimated survival
-function obtained using the product limit method is a step function,
+function obtained using the product limit method is a step function
 with steps at the event times.
 
 A closely related
 [calculation](https://en.wikipedia.org/wiki/Nelson%E2%80%93Aalen_estimator)
 estimates the marginal hazard function.
 
-Survival and hazard functions are usually presented as plots
+The following code can be used to estimate a survival function in
+Statsmodels.  The variable `time` contains the duration from the time
+origin to either the event or to censoring, for each subject, and the
+variable `died` is equal to 1 if the subject died when `time` was
+reached, and is equal to 0 if the subject was censored at that time.
+
+```
+sf = sm.SurvfuncRight(time, died)
+```
+
+Survival and hazard functions are usually presented as plots, often
+overlaying survival or hazard functions for several groups on the same
+axes.
+
+The code below estimates the marginal survival functions for two
+groups and overalys the estimates in a plot:
+
+```
+sf1 = sm.SurvfuncRight(time1, died1)
+sf2 = sm.SurvfuncRight(time2, died2)
+
+ax = plt.axes()
+sf1.plot(ax)
+sf2.plot(ax)
+```
 
 Regression analysis for survival/duration data
 ----------------------------------------------
@@ -155,6 +179,18 @@ coefficient cj, for a covariate, say age, has the property that the
 hazard (e.g. of dying) changes multiplicatively by a factor of exp(cj)
 for each unit increase in the covariate's value.
 
+The following code fits a proportional hazards regression model in
+Statsmodels:
+
+```
+model = sm.PHReg.from_formula("time ~ disease + gender + age", data=df)
+result = model.fit()
+```
+
+After fitting the model, `result.summary()` prints the usual table of
+regression coefficients and standard errors.
+
+
 More on censoring
 -----------------
 
@@ -187,13 +223,13 @@ collection window, say a thee year interval from January 1, 2012 to
 January 1, 2015.  Suppose that people are randomly recruited into the
 study, and if the event has not occured by January 1, 2015, the
 subject is censored.  Thus, subjects who are recruited into the study
-later are more likely to be censored.  But as long as the reruitment
-date is not dependent with the true survival time, then T and C are
-independent.  We can imagine a setting when administrative censoring
-may induce dependence, e.g. if the subjects recruited later in the
-study were healthier than those recruited earlier.  But in many
-situations, this can be excluded as a likely circumstance based on
-knowledge of how the study was conducted.
+later are more likely to be censored.  As long as the reruitment date
+is not dependent with the true survival time, T and C are independent.
+However we can imagine a setting when administrative censoring may
+induce dependence, e.g. if the subjects recruited later in the study
+were healthier than those recruited earlier.  But in many situations,
+this can be excluded as a likely circumstance based on knowledge of
+how the study was conducted.
 
 On the other hand, in some cases there is strong reason to believe
 that subjects are more likely to be censored as they grow sicker,
